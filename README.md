@@ -58,4 +58,4 @@ Your report MUST include the following sections:
 * [MockMock server](<https://github.com/tweakers/MockMock>) on GitHub. Pay attention to this [pull request](https://github.com/tweakers/MockMock/pull/8). While it has not been merged, it will give you the solution to compile the project on your machine.
 * The [mailtrap](<https://mailtrap.io/>) online service for testing SMTP
 * The [SMTP RFC](<https://tools.ietf.org/html/rfc5321#appendix-D>), and in particular the [example scenario](<https://tools.ietf.org/html/rfc5321#appendix-D>)
-* Testing SMTP with TLS: `openssl s_client -connect smtp.mailtrap.io:2525 -starttls smtp -crlf`
+* Testing SMTP with TLS: `openssl s_client -connect ch.heigvd.api.SMTP.smtp.mailtrap.io:2525 -starttls ch.heigvd.api.SMTP.smtp -crlf`

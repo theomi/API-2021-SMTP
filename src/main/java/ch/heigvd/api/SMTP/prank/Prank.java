@@ -1,2 +1,4 @@
-package ch.heigvd.api.SMTP.prank;public class Prank {
+package ch.heigvd.api.SMTP.prank;
+
+public class Prank {
 }

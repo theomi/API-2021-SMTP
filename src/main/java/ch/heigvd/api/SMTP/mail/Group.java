@@ -1,4 +1,4 @@
-package ch.heigvd.api.SMTP;
+package ch.heigvd.api.SMTP.mail;
 
 public class Group {
 }
