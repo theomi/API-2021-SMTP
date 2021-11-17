@@ -2,6 +2,7 @@ package ch.heigvd.api.SMTP;
 
 import ch.heigvd.api.SMTP.configuration.ConfigurationManager;
 import ch.heigvd.api.SMTP.mail.Mail;
+import ch.heigvd.api.SMTP.prank.PrankGenerator;
 import ch.heigvd.api.SMTP.smtp.SmtpClient;
 
 public class App {
@@ -11,8 +12,9 @@ public class App {
         ConfigurationManager cm = new ConfigurationManager();
         SmtpClient client = new SmtpClient(cm.getSmtpServerAddress(), cm.getSmtpServerPort());
 
-        Mail mail = new Mail();
+        PrankGenerator pg = new PrankGenerator();
 
-        client.sendMail(mail);
+        // client.connect();
+        // client.send()
     }
 }

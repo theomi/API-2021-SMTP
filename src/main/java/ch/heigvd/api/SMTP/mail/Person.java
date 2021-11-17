@@ -4,12 +4,12 @@ public class Person {
 
     private final String firstName;
     private final String lastName;
-    private final String address;
+    private final String mail;
 
     public Person(String firstName, String lastName, String address) {
         this.firstName = firstName;
         this.lastName = lastName;
-        this.address = address;
+        this.mail = address;
     }
 
     public String getFirstName() {
@@ -20,7 +20,7 @@ public class Person {
         return lastName;
     }
 
-    public String getAddress() {
-        return address;
+    public String getMail() {
+        return mail;
     }
 }
