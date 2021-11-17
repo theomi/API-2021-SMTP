@@ -9,7 +9,7 @@ public class SmtpClient {
     private final String host;
     private final int port;
 
-    SmtpClient(String host, int port) {
+    public SmtpClient(String host, int port) {
         this.host = host;
         this.port = port;
     }
