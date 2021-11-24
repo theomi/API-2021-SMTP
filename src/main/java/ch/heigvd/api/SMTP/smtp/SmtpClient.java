@@ -4,7 +4,6 @@ import ch.heigvd.api.SMTP.mail.Mail;
 
 import java.io.*;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -17,7 +16,9 @@ public class SmtpClient {
     private final boolean auth;
     private final String username;
     private final String password;
-    private Socket clientSocket;
+    private BufferedWriter out;
+    private BufferedReader in;
+    private boolean connected;
 
     // For debug purposes
     private boolean debug = false;
@@ -33,44 +34,96 @@ public class SmtpClient {
     public boolean connect() {
         try {
             // Creates the sockets and the stream
-            clientSocket = new Socket(host, port);
-            BufferedWriter out = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
-            BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            Socket clientSocket = new Socket(host, port);
+            out = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
+            in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
             String line;
 
             // Shows the welcome line
-            line = in.readLine();
-            if(debug)
-                LOG.log(Level.INFO, line);
+            readLine();
 
             // Outputs EHLO line
             line = "EHLO " + SmtpClient.class.getName();
-            out.write(line + "\r\n");
-            out.flush();
+            writeLine(line);
 
-            while ((line = in.readLine()).startsWith("250-")) {
-                if(debug)
-                    LOG.log(Level.INFO, line);
-            }
+            while ((readLine()).startsWith("250-"));
 
             // SMTP Authentication
-            if(auth) {
-                out.write("AUTH LOGIN\r\n");
-                out.flush();
-                in.readLine();
-                out.write(username + "\r\n");
-                out.flush();
-                in.readLine();
-                out.write(password + "\r\n");
-                out.flush();
+            if (auth) {
+                writeLine("AUTH LOGIN");
+                readLine();
+                writeLine(username);
+                readLine();
+                writeLine(password);
             }
 
-            line = in.readLine();
-            if(debug)
-                LOG.log(Level.INFO, line);
+            if (readLine().startsWith("235")) {
+                connected = true;
+                return true;
+            }else return false;
 
-            return line.startsWith("235");
+        } catch (IOException e) {
+            if(debug)
+                LOG.log(Level.SEVERE, e.toString(), e);
+            return false;
+        }
+    }
+
+    public boolean disconnect() {
+
+        if (!connected) {
+            LOG.log(Level.SEVERE, "The SMTP client is not connected. You must use connect() method before.");
+            return false;
+        }
+
+        try {
+            writeLine("QUIT");
+            return readLine().startsWith("221");
+
+
+        } catch (IOException e) {
+            if(debug)
+                LOG.log(Level.SEVERE, e.toString(), e);
+            return false;
+        }
+
+    }
+
+    public boolean sendMail(Mail mail) {
+        String line;
+
+        if (!connected) {
+            LOG.log(Level.SEVERE, "The SMTP client is not connected. You must use connect() method before.");
+            return false;
+        }
+
+        try {
+            // Mail sender
+            writeLine("MAIL FROM: <" + mail.getFrom() + ">");
+            readLine();
+
+            // Mail recipient
+            writeLine("RCPT TO: <"   + mail.getTo()   + ">");
+            readLine();
+
+            // Mail content
+            writeLine("DATA");
+            readLine();
+
+                // Headers
+                writeLine("From: "    + mail.getFrom());
+                writeLine("To: "      + mail.getTo());
+                writeLine("Cc: "      + mail.getCc());
+                writeLine("Subject: " + mail.getSubject());
+                writeLine("");
+
+                // Body
+                writeLine(mail.getBody());
+
+            writeLine(".");
+
+            return readLine().startsWith("250");
 
 
         } catch (IOException e) {
@@ -80,12 +133,30 @@ public class SmtpClient {
         }
     }
 
-    public void sendMail(Mail mail) {
-
-    }
-
+    /**
+     * Enables logging everything for debug purposes
+     */
     public void enableDebug() {
         this.debug = true;
+    }
+
+    /**
+     * Reads a line from the input reader and logs it if debug is enabled
+     * @return The line as a String
+     * @throws IOException if the read failed
+     */
+    private String readLine() throws IOException {
+        String line = in.readLine();
+        if (debug)
+            System.out.println("\u001B[34m" + line + "\u001B[0m");
+        return line;
+    }
+
+    private void writeLine(String line) throws IOException {
+        out.write(line + "\r\n");
+        out.flush();
+        if (debug)
+            System.out.println(line);
     }
 
 
