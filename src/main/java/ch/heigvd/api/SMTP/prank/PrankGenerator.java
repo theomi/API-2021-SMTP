@@ -9,6 +9,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.Random;
 
 /*
  ATTENTION : Classe selon wsadaigi qui contient le plus de logique
@@ -122,7 +123,8 @@ public class PrankGenerator {
             }
             prank.setVictims(group.getMembers());
 
-            Message message = messages.remove(0);
+            Random rand = new Random();
+            Message message = messages.get(rand.nextInt(messages.size()));
             prank.setSubject(message.getSubject());
             prank.setMessage(message.getContent());
             pranks.add(prank);
