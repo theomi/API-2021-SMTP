@@ -4,6 +4,8 @@ import ch.heigvd.api.SMTP.mail.Mail;
 
 import java.io.*;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -53,9 +55,9 @@ public class SmtpClient {
             if (auth) {
                 writeLine("AUTH LOGIN");
                 readLine();
-                writeLine(username);
+                writeLine(Base64.getEncoder().encodeToString(username.getBytes()));
                 readLine();
-                writeLine(password);
+                writeLine(Base64.getEncoder().encodeToString(password.getBytes()));
             }
 
             if (readLine().startsWith("235")) {

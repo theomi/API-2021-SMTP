@@ -1,16 +1,16 @@
 package ch.heigvd.api.SMTP.mail;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class Group {
 
-    private final ArrayList<Person> members = new ArrayList<Person>();
+    private final LinkedList<Person> members = new LinkedList<>();
 
     public void addMember(Person person) {
         members.add(person);
     }
 
-    public ArrayList<Person> getMembers() {
+    public LinkedList<Person> getMembers() {
         return members;
     }
 }

@@ -1,7 +1,7 @@
 package ch.heigvd.api.SMTP.prank;
 
-import ch.heigvd.api.SMTP.configuration.ConfigurationManager;
 import ch.heigvd.api.SMTP.mail.Group;
+import ch.heigvd.api.SMTP.mail.Mail;
 import ch.heigvd.api.SMTP.mail.Person;
 
 import java.io.BufferedReader;
@@ -16,38 +16,35 @@ import java.util.LinkedList;
  */
 public class PrankGenerator {
 
-    private final ConfigurationManager cf;
+    private int nbrGroups;
 
-    public PrankGenerator(ConfigurationManager cf) {
-        this.cf = cf;
+    public PrankGenerator(int nbrGroups) {
+        this.nbrGroups = nbrGroups;
     }
 
-    public void generatePranks() {
-        int nbrGroups = cf.getNumberOfGroups();
-
+    public LinkedList<Mail> generateMails() {
+        LinkedList<Mail> mails = new LinkedList<>();
         LinkedList<Person> victims = generateVictimsList();
+
         if(victims.size() / nbrGroups < 3) {
             throw new RuntimeException("Il n'y pas assez de victimes pour le nombre de groupes spécifiés");
         }
 
         // Parse victims and generate groups
-        LinkedList<Group> groups = generateGroups(victims, nbrGroups);
         LinkedList<Message> messages = generateMessages();
+        LinkedList<Prank> pranks = generatePranks(victims, messages, nbrGroups);
 
-        for (Group group : groups) {
-
+        for (Prank prank : pranks) {
+            mails.add(prank.generateMail());
         }
 
-        // Set prank message
-        // prank.setMessage();
-
+        return mails;
     }
 
-    public LinkedList<Person> generateVictimsList() {
+    private LinkedList<Person> generateVictimsList() {
         BufferedReader isr = null;
         LinkedList<Person> victims = new LinkedList<>();
         String line;
-        int nbrVictims = 0;
 
         try {
             isr = new BufferedReader(new FileReader("./src/main/resources/victims.utf8"));
@@ -58,7 +55,6 @@ public class PrankGenerator {
             while ((line = isr.readLine()) != null) {
                 if(line.equals("--")) {
                     victims.add(new Person(names[0], names[1], mail));
-                    nbrVictims++;
                     continue;
                 }
 
@@ -75,7 +71,7 @@ public class PrankGenerator {
         return victims;
     }
 
-    public LinkedList<Message> generateMessages() {
+    private LinkedList<Message> generateMessages() {
         BufferedReader isr = null;
         String line;
         LinkedList<Message> messages = new LinkedList<>();
@@ -88,6 +84,8 @@ public class PrankGenerator {
             while ((line = isr.readLine()) != null) {
                 // Parse subject
                 subject = line.split(" : ")[1];
+
+                // parse content
                 while (!((line = isr.readLine()).equals("--"))) {
                     content.append(line).append("\r\n");
                 }
@@ -103,7 +101,8 @@ public class PrankGenerator {
         return messages;
     }
 
-    public LinkedList<Group> generateGroups(LinkedList<Person> victims, int numberOfGroups) {
+    private LinkedList<Prank> generatePranks(LinkedList<Person> victims, LinkedList<Message> messages, int numberOfGroups) {
+        LinkedList<Prank> pranks = new LinkedList<>();
         LinkedList<Group> groups = new LinkedList<>();
         Collections.shuffle(victims);
 
@@ -115,25 +114,20 @@ public class PrankGenerator {
         for(Group group : groups) {
             Prank prank = new Prank();
             // Set prank sender and remove from the list
-            prank.setSender(victims.get(0));
-            victims.remove(victims.get(0));
+            prank.setSender(victims.remove(0));
 
             // Set prank group victims
             for(int i = 0; i < 2; ++i) {
-                group.addMember(victims.get(i));
-                victims.remove(victims.get(i));
+                group.addMember(victims.remove(i));
             }
-            prank.setVictims(victims);
+            prank.setVictims(group.getMembers());
+
+            Message message = messages.remove(0);
+            prank.setSubject(message.getSubject());
+            prank.setMessage(message.getContent());
+            pranks.add(prank);
         }
 
-        return groups;
+        return pranks;
     }
-
-    public static void main(String[] args) {
-        ConfigurationManager cm = new ConfigurationManager();
-        PrankGenerator pg = new PrankGenerator(cm);
-        pg.generatePranks();
-
-    }
-
 }

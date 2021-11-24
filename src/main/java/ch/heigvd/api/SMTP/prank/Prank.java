@@ -61,4 +61,6 @@ public class Prank {
     public void setMessage(String message) {
         this.message = message;
     }
+
+    public void setSubject(String subject){ this.subject = subject; }
 }
