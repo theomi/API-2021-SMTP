@@ -40,14 +40,11 @@ public class ConfigurationManager {
         }
     }
 
-
     public String getSmtpServerAddress() {
         return smtpServerAddress;
     }
 
-    public int getSmtpServerPort() {
-        return smtpServerPort;
-    }
+    public int getSmtpServerPort() { return smtpServerPort;}
 
     public boolean isSmtpAuthEnabled() { return smtpAuth; }
 
@@ -55,7 +52,7 @@ public class ConfigurationManager {
 
     public String getSmtpPassword() {return smtpPassword; }
 
-    public String getNumberOfGroups() {
-        return numberOfGroups;
+    public int getNumberOfGroups() {
+        return Integer.parseInt(numberOfGroups);
     }
 }
