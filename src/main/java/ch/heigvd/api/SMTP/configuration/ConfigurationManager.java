@@ -55,4 +55,8 @@ public class ConfigurationManager {
     public int getNumberOfGroups() {
         return Integer.parseInt(numberOfGroups);
     }
+
+    public void setNumberOfGroups(String numberOfGroups) {
+        this.numberOfGroups = numberOfGroups;
+    }
 }

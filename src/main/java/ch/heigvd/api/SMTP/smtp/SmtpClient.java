@@ -72,29 +72,29 @@ public class SmtpClient {
         }
     }
 
-    public boolean disconnect() {
+    public void disconnect() {
 
         if (!connected) {
             LOG.log(Level.SEVERE, "The SMTP client is not connected. You must use connect() method before.");
-            return false;
+            return;
         }
 
         try {
             writeLine("QUIT");
-            return readLine().startsWith("221");
+            if(readLine().startsWith("221")) {
+                connected = false;
+            }
 
+            in.close();
+            out.close();
 
         } catch (IOException e) {
-            if(debug)
-                LOG.log(Level.SEVERE, e.toString(), e);
-            return false;
+            LOG.log(Level.SEVERE, e.toString(), e);
         }
 
     }
 
     public boolean sendMail(Mail mail) {
-        String line;
-
         if (!connected) {
             LOG.log(Level.SEVERE, "The SMTP client is not connected. You must use connect() method before.");
             return false;

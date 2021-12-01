@@ -7,17 +7,14 @@ import ch.heigvd.api.SMTP.mail.Person;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Random;
 
-/*
- ATTENTION : Classe selon wsadaigi qui contient le plus de logique
- Pour chaque groupe on crée une nouvelle prank
- */
 public class PrankGenerator {
 
-    private int nbrGroups;
+    private final int nbrGroups;
 
     public PrankGenerator(int nbrGroups) {
         this.nbrGroups = nbrGroups;
@@ -27,12 +24,21 @@ public class PrankGenerator {
         LinkedList<Mail> mails = new LinkedList<>();
         LinkedList<Person> victims = generateVictimsList();
 
+        if(victims.isEmpty()) {
+            throw new RuntimeException("Erreur lors de la génération de la liste des victimes");
+        }
+
         if(victims.size() / nbrGroups < 3) {
             throw new RuntimeException("Il n'y pas assez de victimes pour le nombre de groupes spécifiés");
         }
 
         // Parse victims and generate groups
         LinkedList<Message> messages = generateMessages();
+
+        if(messages.isEmpty()) {
+            throw new RuntimeException("Erreur lors de la génération de la liste des messages");
+        }
+
         LinkedList<Prank> pranks = generatePranks(victims, messages, nbrGroups);
 
         for (Prank prank : pranks) {
@@ -48,7 +54,7 @@ public class PrankGenerator {
         String line;
 
         try {
-            isr = new BufferedReader(new FileReader("./src/main/resources/victims.utf8"));
+            isr = new BufferedReader(new FileReader("./src/main/resources/victims.utf8", StandardCharsets.UTF_8));
 
             String[] names = new String[2];
             String mail = "";
@@ -64,6 +70,7 @@ public class PrankGenerator {
                 mail = isr.readLine();
             }
 
+            isr.close();
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
@@ -78,7 +85,7 @@ public class PrankGenerator {
         LinkedList<Message> messages = new LinkedList<>();
 
         try {
-            isr = new BufferedReader(new FileReader("./src/main/resources/messages.utf8"));
+            isr = new BufferedReader(new FileReader("./src/main/resources/messages.utf8", StandardCharsets.UTF_8));
             String subject = null;
             StringBuilder content = new StringBuilder();
 
@@ -94,6 +101,7 @@ public class PrankGenerator {
                 content.setLength(0);
             }
 
+            isr.close();
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }

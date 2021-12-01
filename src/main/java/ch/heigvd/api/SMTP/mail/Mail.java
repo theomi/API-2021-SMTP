@@ -2,12 +2,12 @@ package ch.heigvd.api.SMTP.mail;
 
 public class Mail {
 
-    private String from;
-    private String to;
-    private String cc;
+    private final String from;
+    private final String to;
+    private final String cc;
 
-    private String subject;
-    private String body;
+    private final String subject;
+    private final String body;
 
     public Mail(String from, String to, String cc, String subject, String body) {
         this.from = from;
