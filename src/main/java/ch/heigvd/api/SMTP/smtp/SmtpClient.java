@@ -58,12 +58,15 @@ public class SmtpClient {
                 writeLine(Base64.getEncoder().encodeToString(username.getBytes()));
                 readLine();
                 writeLine(Base64.getEncoder().encodeToString(password.getBytes()));
-            }
 
-            if (readLine().startsWith("235")) {
+                if (readLine().startsWith("235")) {
+                    connected = true;
+                    return true;
+                } else return false;
+            }else {
                 connected = true;
                 return true;
-            }else return false;
+            }
 
         } catch (IOException e) {
             if(debug)
@@ -102,11 +105,11 @@ public class SmtpClient {
 
         try {
             // Mail sender
-            writeLine("MAIL FROM: <" + mail.getFrom() + ">");
+            writeLine("MAIL FROM: " + mail.getFrom());
             readLine();
 
             // Mail recipient
-            writeLine("RCPT TO: <"   + mail.getTo()   + ">");
+            writeLine("RCPT TO: "   + mail.getTo());
             readLine();
 
             // Mail content
