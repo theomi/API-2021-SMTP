@@ -11,6 +11,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class PrankGenerator {
 
@@ -51,6 +53,7 @@ public class PrankGenerator {
         BufferedReader isr;
         LinkedList<Person> victims = new LinkedList<>();
         String line;
+        String regex = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$";
 
         try {
             isr = new BufferedReader(new FileReader("./src/main/resources/victims.utf8", StandardCharsets.UTF_8));
@@ -67,6 +70,13 @@ public class PrankGenerator {
                 // Parse name
                 names = line.split(" ", 2);
                 mail = isr.readLine();
+
+                // Parse email
+                Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
+                Matcher matcher = pattern.matcher(mail);
+                if(!matcher.find()) {
+                    throw new RuntimeException("L'adresse email suviante n'est pas valide : " + mail);
+                }
             }
 
             Collections.shuffle(victims);
