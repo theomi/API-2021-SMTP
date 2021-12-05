@@ -15,17 +15,18 @@ import java.util.Random;
 public class PrankGenerator {
 
     private final int nbrGroups;
+    private final LinkedList<Mail> mails;
 
     public PrankGenerator(int nbrGroups) {
         this.nbrGroups = nbrGroups;
+        mails = new LinkedList<>();
     }
 
-    public LinkedList<Mail> generateMails() {
-        LinkedList<Mail> mails = new LinkedList<>();
+    public void generateMails() {
         LinkedList<Person> victims = generateVictimsList();
 
         if(victims.isEmpty()) {
-            throw new RuntimeException("Erreur lors de la génération de la liste des victimes");
+            throw new RuntimeException("Erreur lors de la génération de la liste des victimes - il n'y a aucune victime :(");
         }
 
         if(victims.size() / nbrGroups < 3) {
@@ -36,7 +37,7 @@ public class PrankGenerator {
         LinkedList<Message> messages = generateMessages();
 
         if(messages.isEmpty()) {
-            throw new RuntimeException("Erreur lors de la génération de la liste des messages");
+            throw new RuntimeException("Erreur lors de la génération de la liste des messages - il n'y a aucun message :(");
         }
 
         LinkedList<Prank> pranks = generatePranks(victims, messages, nbrGroups);
@@ -44,12 +45,10 @@ public class PrankGenerator {
         for (Prank prank : pranks) {
             mails.add(prank.generateMail());
         }
-
-        return mails;
     }
 
     private LinkedList<Person> generateVictimsList() {
-        BufferedReader isr = null;
+        BufferedReader isr;
         LinkedList<Person> victims = new LinkedList<>();
         String line;
 
@@ -66,27 +65,27 @@ public class PrankGenerator {
                 }
 
                 // Parse name
-                names = line.split(" ");
+                names = line.split(" ", 2);
                 mail = isr.readLine();
             }
 
+            Collections.shuffle(victims);
             isr.close();
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
 
-        Collections.shuffle(victims);
         return victims;
     }
 
     private LinkedList<Message> generateMessages() {
-        BufferedReader isr = null;
+        BufferedReader isr;
         String line;
         LinkedList<Message> messages = new LinkedList<>();
 
         try {
             isr = new BufferedReader(new FileReader("./src/main/resources/messages.utf8", StandardCharsets.UTF_8));
-            String subject = null;
+            String subject;
             StringBuilder content = new StringBuilder();
 
             while ((line = isr.readLine()) != null) {
@@ -101,12 +100,12 @@ public class PrankGenerator {
                 content.setLength(0);
             }
 
+            Collections.shuffle(messages);
             isr.close();
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
 
-        Collections.shuffle(messages);
         return messages;
     }
 
@@ -139,5 +138,9 @@ public class PrankGenerator {
         }
 
         return pranks;
+    }
+
+    public LinkedList<Mail> getMails() {
+        return mails;
     }
 }

@@ -3,39 +3,40 @@ package ch.heigvd.api.SMTP.prank;
 import ch.heigvd.api.SMTP.mail.Mail;
 import ch.heigvd.api.SMTP.mail.Person;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class Prank {
 
     private LinkedList<Person> victims;
+    private final StringBuilder victimsWithNames = new StringBuilder();
     private Person sender;
     private String message;
     private String subject;
-
-    // génère le mail proprement avec les champs, la blague et le contenu de la blague
-    public Prank(LinkedList<Person> victims, Person sender, String subject, String message) {
-        this.victims = victims;
-        this.sender = sender;
-        this.message = message;
-        this.subject = subject;
-    }
-
-    public Prank(){}
 
     private String getMailVictims() {
         StringBuilder victimsString = new StringBuilder();
         for (Person victim : victims) {
             if(victimsString.length() != 0) {
                 victimsString.append(", ");
+                victimsWithNames.append(", ");
             }
-            victimsString.append(victim.getFirstName() + " " + victim.getLastName() + "<" + victim.getMail() + ">");
+            victimsWithNames.append(victim.getFirstName() + " " + victim.getLastName() + "<" + victim.getMail() + ">");
+            victimsString.append("<" + victim.getMail() + ">");
         }
         return victimsString.toString();
     }
 
+
+    private String getVictimsWithNames() {
+        return victimsWithNames.toString();
+    }
+
     private String getMailSender() {
-        return sender.getFirstName() + " " + sender.getLastName() + "<" +  sender.getMail() + ">";
+        return "<" +  sender.getMail() + ">";
+    }
+
+    private String getMailSenderWithName() {
+        return sender.getFirstName() + " " + sender.getLastName() + getMailSender();
     }
 
     private String getMailMesage() {
@@ -47,7 +48,7 @@ public class Prank {
     }
 
     public Mail generateMail() {
-       return new Mail(getMailSender(), getMailVictims(), null, getMailSubject(), getMailMesage());
+       return new Mail(getMailSender(), getMailSenderWithName(), getMailVictims(), getVictimsWithNames(), null, getMailSubject(), getMailMesage());
     }
 
     public void setSender(Person sender) {

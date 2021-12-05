@@ -20,10 +20,10 @@ public class SmtpClient {
     private final String password;
     private BufferedWriter out;
     private BufferedReader in;
-    private boolean connected;
+    private boolean connected = false;
 
     // For debug purposes
-    private boolean debug = false;
+    private boolean debug = true;
 
     public SmtpClient(String host, int port, boolean auth, String username, String password) {
         this.host = host;
@@ -37,8 +37,8 @@ public class SmtpClient {
         try {
             // Creates the sockets and the stream
             Socket clientSocket = new Socket(host, port);
-            out = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
-            in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            out = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream(), StandardCharsets.UTF_8));
+            in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream(), StandardCharsets.UTF_8));
 
             String line;
 
@@ -61,16 +61,16 @@ public class SmtpClient {
 
                 if (readLine().startsWith("235")) {
                     connected = true;
-                    return true;
-                } else return false;
-            }else {
+                }
+            } else {
                 connected = true;
-                return true;
             }
+
+            return connected;
 
         } catch (IOException e) {
             if(debug)
-                LOG.log(Level.SEVERE, e.toString(), e);
+                LOG.log(Level.SEVERE, e.getMessage(), e);
             return false;
         }
     }
@@ -116,15 +116,21 @@ public class SmtpClient {
             writeLine("DATA");
             readLine();
 
-                // Headers
-                writeLine("From: "    + mail.getFrom());
-                writeLine("To: "      + mail.getTo());
-                writeLine("Cc: "      + mail.getCc());
-                writeLine("Subject: " + mail.getSubject());
-                writeLine("");
+            // Headers
+            writeLine("Content-Type: text/plain; charset=utf-8");
+            writeLine("From: "    + mail.getFromWithName());
+            writeLine("To: "      + mail.getToWithName());
+            writeLine("Cc: "      + mail.getCc());
+            writeLine("Subject: =?utf-8?B?"
+                    + Base64.getEncoder().encodeToString(mail.getSubject().getBytes())
+                    + "?=");
 
-                // Body
-                writeLine(mail.getBody());
+            writeLine("Subject: " + mail.getSubject());
+
+            writeLine("");
+
+            // Body
+            writeLine(mail.getBody());
 
             writeLine(".");
 
