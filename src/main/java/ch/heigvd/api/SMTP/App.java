@@ -23,7 +23,7 @@ public class App {
             return;
         }
 
-        cm.setNumberOfGroups(args[0]);
+        cm.setNumberOfGroups(Integer.parseInt(args[0]));
 
         SmtpClient client = new SmtpClient(cm.getSmtpServerAddress(), cm.getSmtpServerPort(), cm.isSmtpAuthEnabled(), cm.getSmtpUsername(), cm.getSmtpPassword());
         PrankGenerator pg = new PrankGenerator(cm.getNumberOfGroups());

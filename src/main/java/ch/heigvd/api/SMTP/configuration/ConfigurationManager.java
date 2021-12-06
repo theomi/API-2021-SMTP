@@ -10,7 +10,7 @@ public class ConfigurationManager {
     private final String smtpServerAddress;
     private final int smtpServerPort;
     private final boolean smtpAuth;
-    private String numberOfGroups;
+    private int numberOfGroups;
     private String smtpUsername;
     private String smtpPassword;
 
@@ -27,7 +27,7 @@ public class ConfigurationManager {
 
         this.smtpServerAddress = prop.getProperty("smtpServerAddress");
         this.smtpServerPort = Integer.parseInt(prop.getProperty("smtpServerPort"));
-        this.numberOfGroups = prop.getProperty("numberOfGroups");
+        this.numberOfGroups = Integer.parseInt(prop.getProperty("numberOfGroups"));
         this.smtpAuth = Boolean.parseBoolean(prop.getProperty("smtpAuth"));
         if(smtpAuth) {
             this.smtpUsername = prop.getProperty("smtpUsername");
@@ -48,10 +48,10 @@ public class ConfigurationManager {
     public String getSmtpPassword() {return smtpPassword; }
 
     public int getNumberOfGroups() {
-        return Integer.parseInt(numberOfGroups);
+        return numberOfGroups;
     }
 
-    public void setNumberOfGroups(String numberOfGroups) {
+    public void setNumberOfGroups(int numberOfGroups) {
         this.numberOfGroups = numberOfGroups;
     }
 }

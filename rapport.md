@@ -6,13 +6,32 @@
 
 # Introduction et but
 
-...
+Le but de ce laboratoire est de mettre en pratique les connaissances acquises sur les 
+entrées / sorties en Java ainsi que se familiariser avec le protocole SMTP et Docker. Il est demandé de réaliser
+un client SMTP permettant d'envoyer des emails forgés (pranks) à une liste de victimes tout en utilisant un serveur
+de mocking SMTP. 
 
 # Descriptif de l'implémentation
 
 ## Gestion de la configuration (classe `ConfigurationManager`)
 
-...
+Comme cité précédemmant, cet outil de prank doit pouvoir fonctionner sur n'importe quel serveur
+SMTP. Pour ce faire, nous avons décidé de créer 1 fichier de configuration contenant 
+l'adresse du serveur SMTP, son port ainsi que les identifiants de connexion si nécessaire. 
+Ce fichier contient également le nombre de groupes auxquels les plaisantieries seront envoyées. Une seule plaisanterie sera envoyée par groupe.
+
+Deux autres fichiers de configuration existent: 
+- `messages.utf8` contenant la liste des diverses "plaisanteries" que l'on souhaite
+envoyer.
+- `victims.utf8` contenant la liste des diverses victimes que l'on cible
+
+Il est important de noter que les expéditeurs et destinataires (les membres de chaque groupe) sont automatiquement choisis
+une fois le programme lancé. Il n'est pas possible de les choisir manuellement. Il n'est également pas possible de choisir 
+le message qui est envoyé à chaque groupe. Tout est généré aléatoirement.
+
+Comme décrit ci-dessus, la solution proposée permet une configuration personnalisée permettant 
+de s'adapter à tout serveur SMTP tout en spécifiant ses propres victimes.
+
 
 ## Client SMTP (classe `SmtpClient`)
 
@@ -28,7 +47,22 @@
 
 ## Génération des plaisanteries (classe `PrankGenerator`)
 
-...
+Nous avons décidé de créer une classe `PrankGenerator` s'occupant, comme son nom l'indique, 
+de la génération des pranks. Cette classe possède une méthode publique `generateMails`permettant
+de générer une liste contenant tous les mails à envoyer. Cette méthode est ensuite appelée par le programme
+principal une fois la connexion au client SMTP établie. 
+
+Pour générer les mails correctement, la classe `PrankGenerator` possède 3 autres méthodes privées.
+La première méthode `generateVictimsList` permet de parser le fichier des victimes afin de vérifier que les emails soient correctement formés.
+Cette méthode retourne donc une liste de toutes les victimes.
+
+La deuxième méthode `generateMessage` va, elle aussi, parser le fichier des messages afin de vérifier qu'ils soient correctement formés. 
+Cette méthode retourne la liste des messages.
+
+La troisième méthode `generatePranks` s'occupe de créer un prank par groupe (spécifié dans le fichier de config) puis associe à chaque prank
+la liste des destinaires (les membres du groupes) ainsi que l'expéditeur. Cette méthode spécifie aussi le message du prank qui sera utilisé
+
+La méthode `generateMails`, fait donc appel aux trois fonctions précédentes afin de générer la liste des mails à envoyer.
 
 # Serveur de _mocking_
 
