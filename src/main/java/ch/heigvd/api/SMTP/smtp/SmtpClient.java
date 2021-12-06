@@ -23,7 +23,7 @@ public class SmtpClient {
     private boolean connected = false;
 
     // For debug purposes
-    private boolean debug = true;
+    private boolean debug = false;
 
     public SmtpClient(String host, int port, boolean auth, String username, String password) {
         this.host = host;

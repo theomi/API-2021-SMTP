@@ -16,11 +16,11 @@ import java.util.regex.Pattern;
 
 public class PrankGenerator {
 
-    private final int nbrGroups;
+    private final int nbGroups;
     private final LinkedList<Mail> mails;
 
-    public PrankGenerator(int nbrGroups) {
-        this.nbrGroups = nbrGroups;
+    public PrankGenerator(int nbGroups) {
+        this.nbGroups = nbGroups;
         mails = new LinkedList<>();
     }
 
@@ -31,7 +31,7 @@ public class PrankGenerator {
             throw new RuntimeException("Erreur lors de la génération de la liste des victimes - il n'y a aucune victime :(");
         }
 
-        if(victims.size() / nbrGroups < 3) {
+        if(victims.size() / nbGroups < 3) {
             throw new RuntimeException("Il n'y pas assez de victimes pour le nombre de groupes spécifiés");
         }
 
@@ -42,7 +42,7 @@ public class PrankGenerator {
             throw new RuntimeException("Erreur lors de la génération de la liste des messages - il n'y a aucun message :(");
         }
 
-        LinkedList<Prank> pranks = generatePranks(victims, messages, nbrGroups);
+        LinkedList<Prank> pranks = generatePranks(victims, messages, nbGroups);
 
         for (Prank prank : pranks) {
             mails.add(prank.generateMail());

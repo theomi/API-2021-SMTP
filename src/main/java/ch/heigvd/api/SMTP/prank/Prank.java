@@ -26,7 +26,6 @@ public class Prank {
         return victimsString.toString();
     }
 
-
     private String getVictimsWithNames() {
         return victimsWithNames.toString();
     }
@@ -39,7 +38,7 @@ public class Prank {
         return sender.getFirstName() + " " + sender.getLastName() + getMailSender();
     }
 
-    private String getMailMesage() {
+    private String getMailMessage() {
         return message;
     }
 
@@ -48,7 +47,7 @@ public class Prank {
     }
 
     public Mail generateMail() {
-       return new Mail(getMailSender(), getMailSenderWithName(), getMailVictims(), getVictimsWithNames(), null, getMailSubject(), getMailMesage());
+       return new Mail(getMailSender(), getMailSenderWithName(), getMailVictims(), getVictimsWithNames(), null, getMailSubject(), getMailMessage());
     }
 
     public void setSender(Person sender) {
