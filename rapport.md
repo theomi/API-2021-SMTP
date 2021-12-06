@@ -68,6 +68,45 @@ La méthode `generateMails`, fait donc appel aux trois fonctions précédentes a
 
 # Mode d'emploi
 
+## Comment paramétrer l'application
+
+Pour paramétrer correctement l'application, il existe 3 fichiers.
+
+- `config.properties` - Permet de spécifier l'adresse et le port du serveur SMTP ainsi que
+les identifiants de connexion. C'est également dans ce fichier que se trouve le nombre de groupes
+souhaité
+```
+smtpServerAddress=
+smtpServerPort=
+numberOfGroups=
+smtpAuth=[true / false]
+smtpUsername=[optionnel]
+smtpPassword=[optionnel]
+```
+- `messages.utf8` - Permet de spécifier les différents messages à envoyer. Chaque message
+doit être formaté comme suit :
+
+```txt
+Subject : [TITRE DU MAIL]
+[CONTENU DU MAIL]
+--
+Subject : [TITRE DU MAIL]
+[CONTENU DU MAIL]
+--
+```
+- `victims.utf8` - Permet de lister les différentes victimes (expéditeur et destinataires des pranks)
+Chaque victime doit être formatée comme suit :
+```
+[PRENOM] [NOM_1] [NOM_2] ...
+[EMAIL]
+--
+[PRENOM] [NOM_1] [NOM_2] ...
+[EMAIL]
+--
+```
+
+## Comment lancer l'application
+
 ...
 
 # Diagramme de classes
