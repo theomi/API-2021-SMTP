@@ -105,7 +105,37 @@ Chaque victime doit être formatée comme suit :
 --
 ```
 
+## Tester l'application
+
+Avant d'envoyer vos pranks, il est possible de tester le bon fonctionnement
+de l'application au moyen d'un serveur SMTP de mock
+
+### Serveur SMTP de Mock online
+Si vous souhaitez utiliser un serveur de Mock "online", il suffit de spécifier dans le fichier 
+`config.properties` l'adresse et le port du serveur ainsi que les identifiants pour la connexion au serveur. 
+
+### Serveur SMTP local
+Il est également possible d'utiliser un serveur de Mock local de votre choix. La procédure
+pour la configuration est similaire à celle pour la configguration d'un serveur de Mock online.
+Cependant, dans ce repository vous trouverez dans le dossier `docker` plusieurs scripts permettant de lancer
+un serveur SMTP de Mock nommé (MockMock) via un container Docker.
+
+Pour lancer le container voici les étapes à suivre :
+
+- Lancer le script `build-image.sh` pour constuire l'image docker depuis le Dockerfile.
+- Lancer le script `start.sh` pour démarrer le container et ainsi le serveur de Mock.
+  Une fois cette opération faite, vous pouvez accéder au serveur depuis un navigateur
+  à l'adresse `localhost:8282`. L'adresse de l'hôte SMTP à spécifier dans le fichier de
+  configuration est `localhost` en utilisant le port `25`
+- Une fois terminé , lancer le script `stop.sh` pour stoper le serveur
+
 ## Comment lancer l'application
+
+Une fois que vous avez saisi les bonnes informations pour la connexiob au serveur SMTP,
+vous pouvez lancer l'application et ainsi envoyer les pranks à vos victimes.
+
+Pour ce faire, ...
+
 
 ...
 
