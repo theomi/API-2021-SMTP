@@ -1,8 +1,7 @@
 package ch.heigvd.api.SMTP.configuration;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
 public class ConfigurationManager {
@@ -17,13 +16,9 @@ public class ConfigurationManager {
     public ConfigurationManager() throws IOException {
         Properties prop = new Properties();
 
-        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("config.properties");
+        BufferedReader inputStream = new BufferedReader(new FileReader(System.getProperty("user.dir") + "/config/config.properties", StandardCharsets.UTF_8));
 
-        if(inputStream != null) {
-            prop.load(inputStream);
-        } else {
-            throw new FileNotFoundException("File not found");
-        }
+        prop.load(inputStream);
 
         this.smtpServerAddress = prop.getProperty("smtpServerAddress");
         this.smtpServerPort = Integer.parseInt(prop.getProperty("smtpServerPort"));

@@ -56,7 +56,7 @@ public class PrankGenerator {
         String regex = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$";
 
         try {
-            isr = new BufferedReader(new FileReader("./src/main/resources/victims.utf8", StandardCharsets.UTF_8));
+            isr = new BufferedReader(new FileReader(System.getProperty("user.dir") + "/config/victims.utf8", StandardCharsets.UTF_8));
 
             String[] names = new String[2];
             String mail = "";
@@ -94,7 +94,7 @@ public class PrankGenerator {
         LinkedList<Message> messages = new LinkedList<>();
 
         try {
-            isr = new BufferedReader(new FileReader("./src/main/resources/messages.utf8", StandardCharsets.UTF_8));
+            isr = new BufferedReader(new FileReader(System.getProperty("user.dir") + "/config/messages.utf8", StandardCharsets.UTF_8));
             String subject;
             StringBuilder content = new StringBuilder();
 
@@ -136,7 +136,7 @@ public class PrankGenerator {
 
             // Set prank group victims
             for(int i = 0; i < 2; ++i) {
-                group.addMember(victims.remove(i));
+                group.addMember(victims.remove(0));
             }
             prank.setVictims(group.getMembers());
 

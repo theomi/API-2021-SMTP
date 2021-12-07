@@ -126,7 +126,6 @@ public class SmtpClient {
                     + "?=");
 
             writeLine("Subject: " + mail.getSubject());
-
             writeLine("");
 
             // Body
