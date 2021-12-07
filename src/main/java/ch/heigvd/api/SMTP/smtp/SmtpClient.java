@@ -33,6 +33,10 @@ public class SmtpClient {
         this.password = password;
     }
 
+    /**
+     * Cette méthode est utilisée pour établir la connexion au serveur.
+     * @return true si la connexion a réussi, ou false dans le cas contraire.
+     */
     public boolean connect() {
         try {
             // Creates the sockets and the stream
