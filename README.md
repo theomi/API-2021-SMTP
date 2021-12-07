@@ -146,7 +146,6 @@ Pour lancer le container Docker voici les étapes à suivre :
   configuration est `localhost` en utilisant le port `25`
 - Une fois terminé, lancer le script `stop.sh` pour stopper le serveur
 
-
 # Mode d'emploi
 
 ## Installation
@@ -158,7 +157,6 @@ Pour que ce projet fonctionne, les outils suivants doivent être installés au p
 - Docker
 
 Une fois ce repository cloné, il suffit de modifier les fichiers de configuration puis d'exécuter le programme
-
 
 ## Configuration
 
@@ -209,11 +207,12 @@ SUR PLUSIEURS LIGNES]
 Il est important de noter que votre serveur SMTP doit être lancé avant l'exécution du programme.
 
 Pour lancer le programme, les commandes suivantes doivent être exécutées :
-````
+
+```
 mvn clean package
 cd target
 java -jar .\API-2021-SMTP-1.0-SNAPSHOT-launcher.jar
-````
+```
 
 Lors de l'exécution du programme des messages indiquent son statut d'exécution. Si des erreurs
 surviennent, vous serez alors informé. Pour vérifier que tout s'est bien passé, il suffit d'aller vérifier que
@@ -264,4 +263,4 @@ reçus :
 
 # Diagramme de classes
 
-![Diagramme UML des classes du projet](figures/uml_v1.svg)
+![Diagramme UML des classes du projet](figures/uml_final.jpg)
