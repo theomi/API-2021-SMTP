@@ -8,12 +8,6 @@ import ch.heigvd.api.SMTP.smtp.SmtpClient;
 public class App {
 
     public static void main(String... args) {
-
-        if(args.length != 1) {
-            System.out.println("Veuillez spécifier un nombre de groupes");
-            return;
-        }
-
         ConfigurationManager cm;
 
         try {
@@ -22,8 +16,6 @@ public class App {
             System.out.println("Une erreur est survenue lors de la lecture de la config");
             return;
         }
-
-        cm.setNumberOfGroups(Integer.parseInt(args[0]));
 
         SmtpClient client = new SmtpClient(cm.getSmtpServerAddress(), cm.getSmtpServerPort(), cm.isSmtpAuthEnabled(), cm.getSmtpUsername(), cm.getSmtpPassword());
         PrankGenerator pg = new PrankGenerator(cm.getNumberOfGroups());

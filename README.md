@@ -1,15 +1,16 @@
 # Rapport labo 4 – SMTP
 
-## Louis Hadrien; Mirabile Théo
+## Auteurs : Louis Hadrien, Mirabile Théo
 
----
+# Table des matières
+
 
 # Introduction et but
 
-Le but de ce laboratoire est de mettre en pratique les connaissances acquises sur les
+Ce repository contient la réalisation du laboratoire n°4 du cours d'API 2021. Le but de ce laboratoire est de mettre en pratique les connaissances acquises sur les
 entrées / sorties en Java ainsi que se familiariser avec le protocole SMTP et Docker. Il est demandé de réaliser
 un client SMTP permettant d'envoyer des emails forgés (pranks) à une liste de victimes tout en utilisant un serveur
-de mocking SMTP.
+de mocking SMTP pour les tests.
 
 # Descriptif de l'implémentation
 
@@ -108,11 +109,45 @@ Pour ce faire, nous avons créé un _Dockerfile_ qui a pour effet de récupérer
 
 Un script `build-image.sh` est fourni pour construire l'image Docker à partir du _Dockerfile_, et des scripts `start.sh` et `stop.sh` permettent de démarrer et arrêter le container après avoir construit l'image.
 
+### Serveur SMTP de Mock online
+
+Si vous souhaitez utiliser un serveur de Mock "online", il suffit de spécifier dans le fichier
+`config.properties` l'adresse et le port du serveur ainsi que les identifiants pour la connexion au serveur.
+
+### Serveur SMTP local
+
+Il est également possible d'utiliser un serveur de Mock local de votre choix. La procédure
+pour la configuration est similaire à celle pour la configuration d'un serveur de Mock online.
+Cependant, dans ce repository vous trouverez dans le dossier `docker` plusieurs scripts permettant de lancer
+un serveur SMTP de Mock nommé (MockMock) via un container Docker.
+
+Pour lancer le container voici les étapes à suivre :
+
+- Lancer le script `build-image.sh` pour constuire l'image docker depuis le Dockerfile.
+- Lancer le script `start.sh` pour démarrer le container et ainsi le serveur de Mock.
+  Une fois cette opération faite, vous pouvez accéder au serveur depuis un navigateur
+  à l'adresse `http://localhost:8282`. L'adresse de l'hôte SMTP à spécifier dans le fichier de
+  configuration est `localhost` en utilisant le port `25`
+- Une fois terminé, lancer le script `stop.sh` pour stoper le serveur
+
+
 # Mode d'emploi
 
-## Comment paramétrer l'application
+## Installation
 
-Pour paramétrer correctement l'application, il existe 3 fichiers.
+Pour que ce projet fonctionne, les outils suivants doivent être installés au préalable sur la machine :
+
+- jdk11 >= 11
+- Maven
+- Docker
+
+Une fois ce repository cloné, il suffit de modifier les fichiers de configuration puis d'exécuter le programme
+
+
+## Configuration
+
+Pour paramétrer correctement l'application, il existe 3 fichiers de configuration.
+Ces trois fichiers ce situent dans le dossier `config`. Le détail de ce fichiers est le suivant :
 
 - `config.properties` - Permet de spécifier l'adresse et le port du serveur SMTP ainsi que
   les identifiants de connexion. C'est également dans ce fichier que se trouve le nombre de groupes
@@ -151,43 +186,63 @@ Subject : [TITRE DU MAIL]
 --
 ```
 
-## Tester l'application
+## Exécution
 
-Avant d'envoyer vos pranks, il est possible de tester le bon fonctionnement
-de l'application au moyen d'un serveur SMTP de mock
+Il est important de noter que votre serveur SMTP doit être lancé avant l'exécution du programme.
 
-### Serveur SMTP de Mock online
+Pour lancer le programme, les commandes suivantes doivent être exécutées :
+````
+mvn clean package
+cd target
+java -jar .\API-2021-SMTP-1.0-SNAPSHOT-launcher.jar
+````
 
-Si vous souhaitez utiliser un serveur de Mock "online", il suffit de spécifier dans le fichier
-`config.properties` l'adresse et le port du serveur ainsi que les identifiants pour la connexion au serveur.
+Lors de l'exécution du programme des messages indiquent son statut d'exécution. Si des erreurs
+surviennent, vous serez alors informé. Pour vérifier que tout s'est bien passé, il suffit d'aller vérifier que
+les emails ont bien été envoyés en allant vérifier sur MockMock.
 
-### Serveur SMTP local
+## Exemples d'exécution
 
-Il est également possible d'utiliser un serveur de Mock local de votre choix. La procédure
-pour la configuration est similaire à celle pour la configuration d'un serveur de Mock online.
-Cependant, dans ce repository vous trouverez dans le dossier `docker` plusieurs scripts permettant de lancer
-un serveur SMTP de Mock nommé (MockMock) via un container Docker.
+L'exemple ci-dessous montre les différents échanges lors de l'envoi de mail lorsque le programme est lancé
+avec l'option debug. Pour activer cette option, il suffit de se rendre dans le fichier
+`smtp/SmtpClient.java` et de passer la variable `debug` à `true`
 
-Pour lancer le container voici les étapes à suivre :
+```
+220 e4bc1b5290a2 ESMTP MockMock SMTP Server version 1.4
+EHLO ch.heigvd.api.SMTP.smtp.SmtpClient
+250-e4bc1b5290a2
+250-8BITMIME
+250 Ok
+Start sending emails...
+MAIL FROM: <tobie.praz@heig-vd.ch>
+250 Ok
+RCPT TO: <richard.tenorio@heig-vd.ch>, <hadrien.louis@heig-vd.ch>
+250 Ok
+DATA
+354 End data with <CR><LF>.<CR><LF>
+Content-Type: text/plain; charset=utf-8
+From: Tobie Praz<tobie.praz@heig-vd.ch>
+To: Richard Martins Tenorio<richard.tenorio@heig-vd.ch>, Hadrien Louis<hadrien.louis@heig-vd.ch>
+Cc: null
+Subject: =?utf-8?B?TW9uIHN1cGVyIHNwYW0gMQ==?=
 
-- Lancer le script `build-image.sh` pour constuire l'image docker depuis le Dockerfile.
-- Lancer le script `start.sh` pour démarrer le container et ainsi le serveur de Mock.
-  Une fois cette opération faite, vous pouvez accéder au serveur depuis un navigateur
-  à l'adresse `http://localhost:8282`. L'adresse de l'hôte SMTP à spécifier dans le fichier de
-  configuration est `localhost` en utilisant le port `25`
-- Une fois terminé, lancer le script `stop.sh` pour stoper le serveur
+Salut,
+Ceci est un spam
+Cordialement
 
-## Comment lancer l'application
+.
 
-Une fois que vous avez saisi les bonnes informations pour la connexion au serveur SMTP, vous pouvez lancer l'application et ainsi envoyer les pranks à vos victimes.
+...(suite)...
 
-Pour ce faire, ...
-
-...
+250 Ok
+QUIT
+221 Bye
+Emails sent
+```
 
 # Diagramme de classes
 
-![Diagramme UML des classes du projet](./uml_v1.svg)
+![Diagramme UML des classes du projet](figures/uml_v1.svg)
 
 # Conclusion
 

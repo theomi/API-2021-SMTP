@@ -9,7 +9,7 @@ public class ConfigurationManager {
     private final String smtpServerAddress;
     private final int smtpServerPort;
     private final boolean smtpAuth;
-    private int numberOfGroups;
+    private final int numberOfGroups;
     private String smtpUsername;
     private String smtpPassword;
 
@@ -44,9 +44,5 @@ public class ConfigurationManager {
 
     public int getNumberOfGroups() {
         return numberOfGroups;
-    }
-
-    public void setNumberOfGroups(int numberOfGroups) {
-        this.numberOfGroups = numberOfGroups;
     }
 }
