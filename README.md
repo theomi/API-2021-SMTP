@@ -1,61 +1,194 @@
-# API-2021-SMTP
+# Rapport labo 4 – SMTP
 
-## Objectives
+## Louis Hadrien; Mirabile Théo
 
-In this lab, you will develop a client application (TCP) in Java. This client application will use the Socket API to communicate with an SMTP server. The code that you write will include a **partial implementation of the SMTP protocol**. These are the objectives of the lab:
+---
 
-* Make practical experiments to become familiar with the **SMTP protocol**. After the lab, you should be able to use a command line tool to **communicate with an SMTP server**. You should be able to send well-formed messages to the server, in order to send emails to the address of your choice.
+# Introduction et but
 
-* Understand the notions of **test double** and **mock server**, which are useful when developing and testing a client-server application. During the lab, you will setup and use such a **mock server**.
+Le but de ce laboratoire est de mettre en pratique les connaissances acquises sur les
+entrées / sorties en Java ainsi que se familiariser avec le protocole SMTP et Docker. Il est demandé de réaliser
+un client SMTP permettant d'envoyer des emails forgés (pranks) à une liste de victimes tout en utilisant un serveur
+de mocking SMTP.
 
-* Understand what it means to **implement the SMTP protocol** and be able to send e-mail messages, by working directly on top of the Socket API (i.e. you are not allowed to use a SMTP library).
+# Descriptif de l'implémentation
 
-* **See how easy it is to send forged e-mails**, which appear to be sent by certain people but in reality are issued by malicious users.
+## Gestion de la configuration (classe `ConfigurationManager`)
 
-* **Design a simple object-oriented model** to implement the functional requirements described in the next paragraph.
+Comme cité précédemment, cet outil de prank doit pouvoir fonctionner sur n'importe quel serveur SMTP.
+Pour ce faire, nous avons décidé de créer un fichier de configuration contenant l'adresse du serveur SMTP, son port ainsi que les identifiants de connexion si nécessaire.
+Ce fichier contient également le nombre de groupes auxquels les plaisantieries seront envoyées. Une seule plaisanterie sera envoyée par groupe.
 
+Deux autres fichiers de configuration existent:
 
-## Functional requirements
+- `messages.utf8` contenant la liste des diverses "plaisanteries" que l'on souhaite
+  envoyer.
+- `victims.utf8` contenant la liste des diverses victimes que l'on cible
 
-Your mission is to develop a client application that automatically plays pranks on a list of victims:
+Il est important de noter que les expéditeurs et destinataires (les membres de chaque groupe) sont automatiquement choisis
+une fois le programme lancé. Il n'est pas possible de les choisir manuellement. Il n'est également pas possible de choisir
+le message qui est envoyé à chaque groupe. Tout est généré aléatoirement.
 
-* The user should be able to **define a list of victims** (concretely, you should be able to create a file containing a list of e-mail addresses).
-* The user should be able to **define how many groups of victims should be formed** in a given campaign. In every group of victims, there should be 1 sender and at least 2 recipients (i.e. the minimum size for a group is 3).
-* The user should be able to **define a list of e-mail messages**. When a prank is played on a group of victims, then one of these messages should be selected. **The mail should be sent to all group recipients, from the address of the group sender**. In other words, the recipient victims should be lead to believe that the sender victim has sent them.
+Comme décrit ci-dessus, la solution proposée permet une configuration personnalisée permettant
+de s'adapter à tout serveur SMTP tout en spécifiant ses propres victimes.
 
-## Constraints
+## Client SMTP (classe `SmtpClient`)
 
-- The goal is for you to work at the wire protocol level (with the Socket API). Therefore, you CANNOT use a library that takes care of the protocol details. You have to work with the input and output streams.
-- The program must be configurable: the addresses, groups, messages CANNOT be hard-coded in the program and MUST be managed in config files.
+La partie du programme se chargeant d'établir la connexion au serveur SMTP ainsi que d'effectuer les échanges a été regroupée dans une classe `SmtpClient` pour plus de modularité.
 
+### Instanciation du client
 
-## Example
+Lors de l'appel au constructeur, on lui passe en paramètre le nom d'hôte, numéro de port et les éventuelles informations d'authentification si nécessaire. Si l'authentification doit être utilisée, il faut veiller à activer le paramètre `auth` pour que le client le prenne en compte.
 
-Consider that your program generates a group G1. The group sender is Bob. The group recipients are Alice, Claire and Peter. When the prank is played on group G1, then your program should pick one of the fake messages. It should communicate with an SMTP server, so that Alice, Claire and Peter receive an e-mail, which appears to be sent by Bob.
+### Connexion au serveur
 
-## Teams
+- Lors de l'appel à la méthode `connect()`, le client va tout d'abord tenter de créer le _socket_ réseau du client en lui passant le nom d'hôte et le port. Si la connexion échoue, une exception `IOException` est levée.
+- Ensuite, les flux d'entrée et sortie sont instanciés et reliés aux flux d'entrée et sortie du socket client. L'encodage UTF-8 est spécifié à ce stade afin de l'utiliser pour toutes les communications.
+- Le client va ensuite consommer la ligne contenant le message de bienvenue du serveur, puis répondre avec le message de bienvenue du client.
+- Le client consomme ensuite les lignes spécifiant les fonctionnalités supportées (lignes débutant par `250-`).
+- Si le paramètre `auth` est activé, le client va ensuite transmettre les informations d'authentification encodées en _base64_.
+- Si le processus de connexion s'achève correctement, la méthode renvoie `true`. Si le client ne reçoit pas de confirmation de réussite (code 235) l'authentification a échoué ou un autre problème est survenu. La méthode renvoie alors `false`. De plus, un état de connexion interne à la classe (variable booléenne `connected`) est également mise à jour.
 
-You may work in teams of 2 students.
+### Déconnexion du serveur
 
-## Deliverables
+La méthode `disconnect()` va tout d'abord s'assurer que la connexion est bel et bien ouverte. Ensuite, le message `QUIT` est envoyé dans le flux de sortie. Le client vérifie que le serveur a bien fermé la connexion avant de fermer les flux d'entrée-sortie du _socket_ client.
 
-You will deliver the results of your lab in a GitHub repository. You do not have to fork a specific repo, you can create one from scratch.
+### Envoi d'un e-mail
 
-Your repository should contain both the source code of your Java project and your report. Your report should be a single `README.md` file, located at the root of your repository. The images should be placed in a `figures` directory.
+L'envoi d'un e-mail est relativement basique. Après vérification que la connexion est bien ouverte, on renseigne les adresses de l'expéditeur et du destinataire, ainsi que le corps du message. On prendra également garde à renseigner l'encodage UTF-8 pour le sujet et le corps du message. L'encodage des noms d'expéditeur et destinataire n'est pas géré ici.
 
-Your report MUST include the following sections:
+### Mode debug
 
-* **A brief description of your project**: if people exploring GitHub find your repo, without a prior knowledge of the API course, they should be able to understand what your repo is all about and whether they should look at it more closely.
+Si l'on souhaite afficher en détail l'ensemble des échanges TCP effectués entre le client et le serveur, il est possible d'utiliser la fonction `SmtpClient.enableDebug()`. Dès lors
+que cette fonction est appelée, le contenu des flux d'entrée-sortie est affiché sur la console.
 
-* **Instructions for setting up a mock SMTP server (with Docker - which you will learn all about in the next 2 weeks)**. The user who wants to experiment with your tool but does not really want to send pranks immediately should be able to use a mock SMTP server. For people who are not familiar with this concept, explain it to them in simple terms. Explain which mock server you have used and how you have set it up.
+## Modélisation des e-mails
 
-* **Clear and simple instructions for configuring your tool and running a prank campaign**. If you do a good job, an external user should be able to clone your repo, edit a couple of files and send a batch of e-mails in less than 10 minutes.
+Nous avons décidé de représenter les e-mails sous formes d'instances de la classe `Mail`.
+Cela a pour avantage de manipulerles e-mails comme des objets, et donc leurs champs en tant qu'attributs de cette même classe. Un e-mail dispose donc des attributs `from`et `to` pour l'expéditeur et le destinataire, `cc` et `subject`, ainsi que `body` pour le contenu.
 
-* **A description of your implementation**: document the key aspects of your code. It is probably a good idea to start with a class diagram. Decide which classes you want to show (focus on the important ones) and describe their responsibilities in text. It is also certainly a good idea to include examples of dialogues between your client and an SMTP server (maybe you also want to include some screenshots here).
+### Attributs `fromWithName` et `toWithName`
 
-## References
+Ces attributs ont pour particularité de contenir le nom complet de l'expéditeur respectivement du destinataire, en plus de leur adresse e-mail. Ils sont utilisés dans les champs `From:` et `To:` du corps du message afin d'afficher le nom complet dans l'e-mail final.
 
-* [MockMock server](<https://github.com/tweakers/MockMock>) on GitHub. Pay attention to this [pull request](https://github.com/tweakers/MockMock/pull/8). While it has not been merged, it will give you the solution to compile the project on your machine.
-* The [mailtrap](<https://mailtrap.io/>) online service for testing SMTP
-* The [SMTP RFC](<https://tools.ietf.org/html/rfc5321#appendix-D>), and in particular the [example scenario](<https://tools.ietf.org/html/rfc5321#appendix-D>)
-* Testing SMTP with TLS: `openssl s_client -connect ch.heigvd.api.SMTP.smtp.mailtrap.io:2525 -starttls ch.heigvd.api.SMTP.smtp -crlf`
+## Personnes et groupes
+
+Au même titre que pour les e-mails, les personnes (ayant pour attributs un nom, prénom et adresse e-mail) et groupes (ensemble de personnes) sont modélisés sous forme de classes dans un souci de segmentation du code et de réutilisabilité.
+
+## Génération des plaisanteries (classe `PrankGenerator`)
+
+Nous avons décidé de créer une classe `PrankGenerator` s'occupant, comme son nom l'indique, de la génération des pranks. Cette classe possède une méthode publique `generateMails`permettant de générer une liste contenant tous les mails à envoyer. Cette méthode est ensuite appelée par le programme principal une fois la connexion au client SMTP établie.
+
+Pour générer les mails correctement, la classe `PrankGenerator` possède 3 autres méthodes privées.
+
+- La première méthode `generateVictimsList` permet de parser le fichier des victimes afin de vérifier que les emails soient correctement formés.
+  Cette méthode retourne donc une liste de toutes les victimes.
+- La deuxième méthode `generateMessage` va, elle aussi, parser le fichier des messages afin de vérifier qu'ils soient correctement formés. Cette méthode retourne la liste des messages.
+- La troisième méthode `generatePranks` s'occupe de créer un prank par groupe (spécifié dans le fichier de config) puis associe à chaque prank la liste des destinaires (les membres du groupes) ainsi que l'expéditeur. Cette méthode spécifie aussi le message du prank qui sera utilisé.
+
+La méthode `generateMails`, fait donc appel aux trois fonctions précédentes afin de générer la liste des mails à envoyer.
+
+# Serveur de _mocking_
+
+Le serveur de _mocking_ que nous avons utilisé est Mailtrap, car ce service a pour avantage d'être dans le _cloud_ et d'être donc utilisable simultanément par plusieurs instances de notre programme sur des machines différentes. Dans le cadre de ce laboratoire, cela nous a servi afin de faire des tests depuis nos machines respectives.
+
+## Fonctionnement de Mailtrap
+
+Après avoir créé un compte sur [le site de Mailtrap](https://mailtrap.io/), une _Inbox_ nous est fournie par le site. Avec la formule gratuite, nous sommes limités à un maximum de 500 e-mails envoyés par mois, et 5 envois toutes les 10 secondes. La première limite n'est pas problématique au premier abord, cependant la limite d'e-mails envoyés simultanément peut poser problème avec notre programme si on définit le nombre de groupes à plus de 5.
+
+Pour connecter notre programme au serveur SMTP de Mailtrap, il faut récupérer les informations d'authentification de notre _Inbox_ et les renseigner dans les champs `username` et `password` du fichier de configuration, tel qu'expliqué par la suite.
+
+## Serveur de mocking local avec _MockMock_
+
+Les limitations posées par la formule gratuite de Mailtrap pouvant être problématiques suivant le nombre de groupes, nous avons également fourni la possibilité d'utiliser un serveur de _mocking_ en local. Ce serveur utilise le logiciel [MockMock](https://github.com/tweakers/MockMock) qui est un serveur SMTP construit en Java et qui dispose d'une interface web permettant de consulter les e-mails reçus par le serveur SMTP.
+
+### Utilisation de _MockMock_ avec Docker
+
+Pour ce faire, nous avons créé un _Dockerfile_ qui a pour effet de récupérer l'image `openjdk:11`, qui contient les outils de développement pour Java 11, sur lequel _MockMock_ est basé. Le Dockerfile va ensuite indiquer les ports à ouvrir au niveau du container, puis copier le fichier JAR exécutable de _MockMock_ dans le système de fichiers du container.
+
+Un script `build-image.sh` est fourni pour construire l'image Docker à partir du _Dockerfile_, et des scripts `start.sh` et `stop.sh` permettent de démarrer et arrêter le container après avoir construit l'image.
+
+# Mode d'emploi
+
+## Comment paramétrer l'application
+
+Pour paramétrer correctement l'application, il existe 3 fichiers.
+
+- `config.properties` - Permet de spécifier l'adresse et le port du serveur SMTP ainsi que
+  les identifiants de connexion. C'est également dans ce fichier que se trouve le nombre de groupes
+  souhaité
+
+```
+smtpServerAddress=
+smtpServerPort=
+numberOfGroups=
+smtpAuth=[true / false]
+smtpUsername=[optionnel]
+smtpPassword=[optionnel]
+```
+
+- `messages.utf8` - Permet de spécifier les différents messages à envoyer. Chaque message
+  doit être formaté comme suit :
+
+```txt
+Subject : [TITRE DU MAIL]
+[CONTENU DU MAIL]
+--
+Subject : [TITRE DU MAIL]
+[CONTENU DU MAIL]
+--
+```
+
+- `victims.utf8` - Permet de lister les différentes victimes (expéditeur et destinataires des pranks)
+  Chaque victime doit être formatée comme suit :
+
+```
+[PRENOM] [NOM_1] [NOM_2] ...
+[EMAIL]
+--
+[PRENOM] [NOM_1] [NOM_2] ...
+[EMAIL]
+--
+```
+
+## Tester l'application
+
+Avant d'envoyer vos pranks, il est possible de tester le bon fonctionnement
+de l'application au moyen d'un serveur SMTP de mock
+
+### Serveur SMTP de Mock online
+
+Si vous souhaitez utiliser un serveur de Mock "online", il suffit de spécifier dans le fichier
+`config.properties` l'adresse et le port du serveur ainsi que les identifiants pour la connexion au serveur.
+
+### Serveur SMTP local
+
+Il est également possible d'utiliser un serveur de Mock local de votre choix. La procédure
+pour la configuration est similaire à celle pour la configuration d'un serveur de Mock online.
+Cependant, dans ce repository vous trouverez dans le dossier `docker` plusieurs scripts permettant de lancer
+un serveur SMTP de Mock nommé (MockMock) via un container Docker.
+
+Pour lancer le container voici les étapes à suivre :
+
+- Lancer le script `build-image.sh` pour constuire l'image docker depuis le Dockerfile.
+- Lancer le script `start.sh` pour démarrer le container et ainsi le serveur de Mock.
+  Une fois cette opération faite, vous pouvez accéder au serveur depuis un navigateur
+  à l'adresse `http://localhost:8282`. L'adresse de l'hôte SMTP à spécifier dans le fichier de
+  configuration est `localhost` en utilisant le port `25`
+- Une fois terminé, lancer le script `stop.sh` pour stoper le serveur
+
+## Comment lancer l'application
+
+Une fois que vous avez saisi les bonnes informations pour la connexion au serveur SMTP, vous pouvez lancer l'application et ainsi envoyer les pranks à vos victimes.
+
+Pour ce faire, ...
+
+...
+
+# Diagramme de classes
+
+![Diagramme UML des classes du projet](./uml_v1.svg)
+
+# Conclusion
+
+...
