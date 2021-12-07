@@ -4,8 +4,6 @@ Auteurs : Louis Hadrien, Mirabile Théo
 
 # Table des matières
 
-- [Rapport labo 4 – SMTP](#rapport-labo-4--smtp)
-- [Table des matières](#table-des-matires)
 - [Introduction et but](#introduction-et-but)
 - [Descriptif de l'implémentation](#descriptif-de-limplmentation)
   - [Gestion de la configuration (classe `ConfigurationManager`)](#gestion-de-la-configuration-classe-configurationmanager)
@@ -235,13 +233,13 @@ EHLO ch.heigvd.api.SMTP.smtp.SmtpClient
 Start sending emails...
 MAIL FROM: <tobie.praz@heig-vd.ch>
 250 Ok
-RCPT TO: <richard.tenorio@heig-vd.ch>, <hadrien.louis@heig-vd.ch>
+RCPT TO: <richard.martinstenorio@heig-vd.ch>, <hadrien.louis@heig-vd.ch>
 250 Ok
 DATA
 354 End data with <CR><LF>.<CR><LF>
 Content-Type: text/plain; charset=utf-8
 From: Tobie Praz<tobie.praz@heig-vd.ch>
-To: Richard Martins Tenorio<richard.tenorio@heig-vd.ch>, Hadrien Louis<hadrien.louis@heig-vd.ch>
+To: Richard Martins Tenorio<richard.martinstenorio@heig-vd.ch>, Hadrien Louis<hadrien.louis@heig-vd.ch>
 Cc: null
 Subject: =?utf-8?B?TW9uIHN1cGVyIHNwYW0gMQ==?=
 
@@ -259,10 +257,11 @@ QUIT
 Emails sent
 ```
 
+Une fois les emails envoyés, il est possible d'aller vérifier sur le serveur, s'ils ont bien été
+reçus :
+
+![Diagramme UML des classes du projet](figures/mockmock.png)
+
 # Diagramme de classes
 
 ![Diagramme UML des classes du projet](figures/uml_v1.svg)
-
-# Conclusion
-
-...
