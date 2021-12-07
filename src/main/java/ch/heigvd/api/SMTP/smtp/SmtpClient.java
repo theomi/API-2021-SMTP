@@ -126,10 +126,8 @@ public class SmtpClient {
             writeLine("To: "      + mail.getToWithName());
             writeLine("Cc: "      + mail.getCc());
             writeLine("Subject: =?utf-8?B?"
-                    + Base64.getEncoder().encodeToString(mail.getSubject().getBytes())
+                    + Base64.getEncoder().encodeToString(mail.getSubject().getBytes(StandardCharsets.UTF_8))
                     + "?=");
-
-            writeLine("Subject: " + mail.getSubject());
             writeLine("");
 
             // Body
