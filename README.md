@@ -20,7 +20,6 @@ Auteurs : Louis Hadrien, Mirabile Théo
   - [Exécution](#excution)
   - [Exemples d'exécution](#exemples-dexcution)
 - [Diagramme de classes](#diagramme-de-classes)
-- [Conclusion](#conclusion)
 
 # Introduction et but
 
@@ -48,7 +47,7 @@ une fois le programme lancé. Il n'est pas possible de les choisir manuellement.
 le message qui est envoyé à chaque groupe. Tout est généré aléatoirement.
 
 Comme décrit ci-dessus, la solution proposée permet une configuration personnalisée permettant
-de s'adapter à tout serveur SMTP tout en spécifiant ses propres victimes.
+de s'adapter à tout serveur SMTP tout en spécifiant ses propres victimes et messages.
 
 ## Client SMTP (classe `SmtpClient`)
 
@@ -73,7 +72,7 @@ La méthode `disconnect()` va tout d'abord s'assurer que la connexion est bel et
 
 ### Envoi d'un e-mail
 
-L'envoi d'un e-mail est relativement basique. Après vérification que la connexion est bien ouverte, on renseigne les adresses de l'expéditeur et du destinataire, ainsi que le corps du message. On prendra également garde à renseigner l'encodage UTF-8 pour le sujet et le corps du message. L'encodage des noms d'expéditeur et destinataire n'est pas géré ici.
+L'envoi d'un e-mail est relativement basique. Après vérification que la connexion est bien ouverte, on renseigne les adresses de l'expéditeur et du/des destinataires, ainsi que le corps du message. On prendra également garde à renseigner l'encodage UTF-8 pour le sujet et le corps du message. L'encodage des noms d'expéditeur et destinataire n'est pas géré ici.
 
 ### Mode debug
 
@@ -83,7 +82,7 @@ que cette fonction est appelée, le contenu des flux d'entrée-sortie est affich
 ## Modélisation des e-mails
 
 Nous avons décidé de représenter les e-mails sous formes d'instances de la classe `Mail`.
-Cela a pour avantage de manipulerles e-mails comme des objets, et donc leurs champs en tant qu'attributs de cette même classe. Un e-mail dispose donc des attributs `from`et `to` pour l'expéditeur et le destinataire, `cc` et `subject`, ainsi que `body` pour le contenu.
+Cela a pour avantage de manipuler les e-mails comme des objets, et donc leurs champs en tant qu'attributs de cette même classe. Un e-mail dispose donc des attributs `from`et `to` pour l'expéditeur et le destinataire, `cc` et `subject`, ainsi que `body` pour le contenu.
 
 ### Attributs `fromWithName` et `toWithName`
 
@@ -164,7 +163,7 @@ Une fois ce repository cloné, il suffit de modifier les fichiers de configurati
 ## Configuration
 
 Pour paramétrer correctement l'application, il existe 3 fichiers de configuration.
-Ces trois fichiers ce situent dans le dossier `config`. Le détail de ce fichiers est le suivant :
+Ces trois fichiers se situent dans le dossier `config`. Le détail de ce fichiers est le suivant :
 
 - `config.properties` - Permet de spécifier l'adresse et le port du serveur SMTP ainsi que
   les identifiants de connexion. C'est également dans ce fichier que se trouve le nombre de groupes
@@ -184,10 +183,12 @@ smtpPassword=[optionnel]
 
 ```txt
 Subject : [TITRE DU MAIL]
-[CONTENU DU MAIL]
+[CONTENU DU MAIL
+SUR PLUSIEURS LIGNES]
 --
 Subject : [TITRE DU MAIL]
-[CONTENU DU MAIL]
+[CONTENU DU MAIL
+SUR PLUSIEURS LIGNES]
 --
 ```
 
@@ -216,13 +217,12 @@ java -jar .\API-2021-SMTP-1.0-SNAPSHOT-launcher.jar
 
 Lors de l'exécution du programme des messages indiquent son statut d'exécution. Si des erreurs
 surviennent, vous serez alors informé. Pour vérifier que tout s'est bien passé, il suffit d'aller vérifier que
-les emails ont bien été envoyés en allant vérifier sur MockMock.
+les emails ont bien été reçus en allant vérifier sur MockMock.
 
 ## Exemples d'exécution
 
 L'exemple ci-dessous montre les différents échanges lors de l'envoi de mail lorsque le programme est lancé
-avec l'option debug. Pour activer cette option, il suffit de se rendre dans le fichier
-`smtp/SmtpClient.java` et de passer la variable `debug` à `true`
+avec l'option debug.
 
 ```
 220 e4bc1b5290a2 ESMTP MockMock SMTP Server version 1.4
