@@ -34,9 +34,9 @@ de mocking SMTP pour les tests.
 
 Comme cité précédemment, cet outil de prank doit pouvoir fonctionner sur n'importe quel serveur SMTP.
 Pour ce faire, nous avons décidé de créer un fichier de configuration contenant l'adresse du serveur SMTP, son port ainsi que les identifiants de connexion si nécessaire.
-Ce fichier contient également le nombre de groupes auxquels les plaisantieries seront envoyées. Une seule plaisanterie sera envoyée par groupe.
+Ce fichier contient également le nombre de groupes auxquels les plaisanteries seront envoyées. Une seule plaisanterie sera envoyée par groupe.
 
-Deux autres fichiers de configuration existent:
+Deux autres fichiers de configuration existent :
 
 - `messages.utf8` contenant la liste des diverses "plaisanteries" que l'on souhaite
   envoyer.
@@ -64,7 +64,7 @@ Lors de l'appel au constructeur, on lui passe en paramètre le nom d'hôte, num�
 - Le client va ensuite consommer la ligne contenant le message de bienvenue du serveur, puis répondre avec le message de bienvenue du client.
 - Le client consomme ensuite les lignes spécifiant les fonctionnalités supportées (lignes débutant par `250-`).
 - Si le paramètre `auth` est activé, le client va ensuite transmettre les informations d'authentification encodées en _base64_.
-- Si le processus de connexion s'achève correctement, la méthode renvoie `true`. Si le client ne reçoit pas de confirmation de réussite (code 235) l'authentification a échoué ou un autre problème est survenu. La méthode renvoie alors `false`. De plus, un état de connexion interne à la classe (variable booléenne `connected`) est également mise à jour.
+- Si le processus de connexion s'achève correctement, la méthode renvoie `true`. Si le client ne reçoit pas de confirmation de réussite (code 235) l'authentification a échoué ou un autre problème est survenu. La méthode renvoie alors `false`. De plus, un état de connexion interne à la classe (variable booléenne `connected`) est également mis à jour.
 
 ### Déconnexion du serveur
 
@@ -101,7 +101,7 @@ Pour générer les mails correctement, la classe `PrankGenerator` possède 3 aut
 - La première méthode `generateVictimsList` permet de parser le fichier des victimes afin de vérifier que les emails soient correctement formés.
   Cette méthode retourne donc une liste de toutes les victimes.
 - La deuxième méthode `generateMessage` va, elle aussi, parser le fichier des messages afin de vérifier qu'ils soient correctement formés. Cette méthode retourne la liste des messages.
-- La troisième méthode `generatePranks` s'occupe de créer un prank par groupe (spécifié dans le fichier de config) puis associe à chaque prank la liste des destinaires (les membres du groupes) ainsi que l'expéditeur. Cette méthode spécifie aussi le message du prank qui sera utilisé.
+- La troisième méthode `generatePranks` s'occupe de créer un prank par groupe (spécifié dans le fichier de config) puis associe à chaque prank la liste des destinataires (les membres du groupes) ainsi que l'expéditeur. Cette méthode spécifie aussi le message du prank qui sera utilisé.
 
 La méthode `generateMails`, fait donc appel aux trois fonctions précédentes afin de générer la liste des mails à envoyer.
 
@@ -137,14 +137,14 @@ pour la configuration est similaire à celle pour la configuration d'un serveur 
 Cependant, dans ce repository vous trouverez dans le dossier `docker` plusieurs scripts permettant de lancer
 un serveur SMTP de Mock nommé (MockMock) via un container Docker.
 
-Pour lancer le container voici les étapes à suivre :
+Pour lancer le container Docker voici les étapes à suivre :
 
-- Lancer le script `build-image.sh` pour constuire l'image docker depuis le Dockerfile.
+- Lancer le script `build-image.sh` pour construire l'image docker depuis le Dockerfile.
 - Lancer le script `start.sh` pour démarrer le container et ainsi le serveur de Mock.
   Une fois cette opération faite, vous pouvez accéder au serveur depuis un navigateur
   à l'adresse `http://localhost:8282`. L'adresse de l'hôte SMTP à spécifier dans le fichier de
   configuration est `localhost` en utilisant le port `25`
-- Une fois terminé, lancer le script `stop.sh` pour stoper le serveur
+- Une fois terminé, lancer le script `stop.sh` pour stopper le serveur
 
 
 # Mode d'emploi
