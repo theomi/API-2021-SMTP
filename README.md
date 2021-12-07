@@ -1,9 +1,28 @@
 # Rapport labo 4 – SMTP
 
-## Auteurs : Louis Hadrien, Mirabile Théo
+Auteurs : Louis Hadrien, Mirabile Théo
 
 # Table des matières
 
+- [Rapport labo 4 – SMTP](#rapport-labo-4--smtp)
+- [Table des matières](#table-des-matires)
+- [Introduction et but](#introduction-et-but)
+- [Descriptif de l'implémentation](#descriptif-de-limplmentation)
+  - [Gestion de la configuration (classe `ConfigurationManager`)](#gestion-de-la-configuration-classe-configurationmanager)
+  - [Client SMTP (classe `SmtpClient`)](#client-smtp-classe-smtpclient)
+  - [Modélisation des e-mails](#modlisation-des-e-mails)
+  - [Personnes et groupes](#personnes-et-groupes)
+  - [Génération des plaisanteries (classe `PrankGenerator`)](#gnration-des-plaisanteries-classe-prankgenerator)
+- [Serveur de _mocking_](#serveur-de-_mocking_)
+  - [Fonctionnement de Mailtrap](#fonctionnement-de-mailtrap)
+  - [Serveur de mocking local avec _MockMock_](#serveur-de-mocking-local-avec-_mockmock_)
+- [Mode d'emploi](#mode-demploi)
+  - [Installation](#installation)
+  - [Configuration](#configuration)
+  - [Exécution](#excution)
+  - [Exemples d'exécution](#exemples-dexcution)
+- [Diagramme de classes](#diagramme-de-classes)
+- [Conclusion](#conclusion)
 
 # Introduction et but
 
