@@ -79,6 +79,9 @@ public class SmtpClient {
         }
     }
 
+    /**
+     * Cette méthode est utilisée pour fermer la connexion au serveur.
+     */
     public void disconnect() {
 
         if (!connected) {
@@ -101,6 +104,11 @@ public class SmtpClient {
 
     }
 
+    /**
+     * Cette méthode permet d'envoyer un email au serveur en utilisant le protocole SMTP
+     * @param mail
+     * @return
+     */
     public boolean sendMail(Mail mail) {
         if (!connected) {
             LOG.log(Level.SEVERE, "The SMTP client is not connected. You must use connect() method before.");
@@ -124,7 +132,11 @@ public class SmtpClient {
             writeLine("Content-Type: text/plain; charset=utf-8");
             writeLine("From: "    + mail.getFromWithName());
             writeLine("To: "      + mail.getToWithName());
-            writeLine("Cc: "      + mail.getCc());
+
+            if(mail.getCc() != null) {
+                writeLine("Cc: "      + mail.getCc());
+            }
+
             writeLine("Subject: =?utf-8?B?"
                     + Base64.getEncoder().encodeToString(mail.getSubject().getBytes(StandardCharsets.UTF_8))
                     + "?=");
@@ -153,7 +165,7 @@ public class SmtpClient {
     }
 
     /**
-     * Reads a line from the input reader and logs it if debug is enabled
+     * Permet de lire la ligne entrée par l'utilisateur et la log si le debug est activé
      * @return The line as a String
      * @throws IOException if the read failed
      */
@@ -164,6 +176,11 @@ public class SmtpClient {
         return line;
     }
 
+    /**
+     * Permet d'envoyer une commmande au serveur SMTP
+     * @param line
+     * @throws IOException
+     */
     private void writeLine(String line) throws IOException {
         out.write(line + "\r\n");
         out.flush();
