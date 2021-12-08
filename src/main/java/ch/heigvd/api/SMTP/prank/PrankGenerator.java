@@ -24,6 +24,11 @@ public class PrankGenerator {
         mails = new LinkedList<>();
     }
 
+    /**
+     * Permet de générer la liste des email à envoyer à partir des pranks créés.
+     * Cette méthode popule la liste-chainée mails à utiliser par la suite
+     * pour l'envoi par le client SMTP
+     */
     public void generateMails() {
         LinkedList<Person> victims = generateVictimsList();
 
@@ -49,6 +54,11 @@ public class PrankGenerator {
         }
     }
 
+    /**
+     * Cette méthode parse la liste des victimes et retourne une liste de
+     * Person. Cette méthode est utilisée pour la génération des emails
+     * @return la liste de toutes les victimes
+     */
     private LinkedList<Person> generateVictimsList() {
         BufferedReader isr;
         LinkedList<Person> victims = new LinkedList<>();
@@ -88,6 +98,11 @@ public class PrankGenerator {
         return victims;
     }
 
+    /**
+     * Cette méthode parse la liste des messages et retourne une liste de Messages
+     * Cette méthode est utilisée pour la génération des emails
+     * @return la liste des messages
+     */
     private LinkedList<Message> generateMessages() {
         BufferedReader isr;
         String line;
@@ -119,6 +134,14 @@ public class PrankGenerator {
         return messages;
     }
 
+    /**
+     * Cette méthode permet de générer les divers Pranks. Chaque prank pourra ensuite
+     * être envoyé par email
+     * @param victims la liste des victimes
+     * @param messages la liste des messages
+     * @param numberOfGroups le nombre de groupes
+     * @return une liste de pranks
+     */
     private LinkedList<Prank> generatePranks(LinkedList<Person> victims, LinkedList<Message> messages, int numberOfGroups) {
         LinkedList<Prank> pranks = new LinkedList<>();
         LinkedList<Group> groups = new LinkedList<>();
